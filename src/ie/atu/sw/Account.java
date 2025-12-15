@@ -1,5 +1,8 @@
 package ie.atu.sw;
 
+import ie.atu.sw.exceptions.InsufficientFundsException;
+import ie.atu.sw.exceptions.InvalidAmountException;
+
 public class Account {
 
     private String accountHolder; // Name of the account holder
@@ -30,24 +33,40 @@ public class Account {
 
     // Method to deposit money into the account
     public void deposit(double amount) {
+    	if (amount <= 0) {
+            throw new InvalidAmountException("Deposit amount must be positive.");
+        }
         balance += amount;
     }
 
     // Method to withdraw money from the account (only if balance is sufficient)
     public boolean withdraw(double amount) {
-        if (amount > balance) return false; // Insufficient funds
+    	  if (amount <= 0) {
+    	        throw new InvalidAmountException("Withdrawal amount must be positive.");
+    	    }
+    	    if (amount > balance) {
+    	        throw new InsufficientFundsException("Insufficient funds for withdrawal.");
+    	    } // Insufficient funds
         balance -= amount;
         return true;
     }
 
     // Method to approve a loan for the account
     public void approveLoan(double amount) {
+    	if (amount <= 0) {
+            throw new InvalidAmountException("Loan amount must be positive.");
+        }
         loan += amount;
     }
 
     // Method to repay a part of the loan (only if amount <= loan)
     public boolean repayLoan(double amount) {
-        if (amount > loan) return false; // Repayment exceeds loan
+    	if (amount <= 0) {
+            throw new InvalidAmountException("Repayment amount must be positive.");
+        }
+        if (amount > loan) {
+            throw new InvalidAmountException("Repayment exceeds outstanding loan.");
+        }
         loan -= amount;
         return true;
     }

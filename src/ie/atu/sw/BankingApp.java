@@ -3,6 +3,8 @@ package ie.atu.sw;
 import java.util.ArrayList;
 import java.util.List;
 
+import ie.atu.sw.exceptions.AccountNotFoundException;
+
 /**
  * This program simulates a simple banking application. It allows:
  * - Adding new accounts with an initial deposit.
@@ -21,6 +23,7 @@ public class BankingApp {
 	    // Add accounts
 	    bank.addAccount("Alice", 1000);
 	    bank.addAccount("Bob", 500);
+	    new Account("John", 100).deposit(-50);
 
 	    // Test deposits
 	    System.out.println("Depositing 200 to Alice: " + bank.deposit("Alice", 200)); // Should return true
@@ -60,12 +63,10 @@ public class BankingApp {
      * @return The Account object if found, otherwise null.
      */
     private Account findAccount(String accountHolder) {
-        for (Account account : accounts) {
-            if (account.getAccountHolder().equals(accountHolder)) {
-                return account;
-            }
-        }
-        return null;
+    	 return accounts.stream()
+    	            .filter(acc -> acc.getAccountHolder().equals(accountHolder))
+    	            .findFirst()
+    	            .orElseThrow(() -> new AccountNotFoundException("Account not found: " + accountHolder));
     }
 
     /**
