@@ -4,7 +4,7 @@ import ie.atu.sw.exceptions.InsufficientFundsException;
 import ie.atu.sw.exceptions.InvalidAmountException;
 
 public class Account {
-
+	
     private String accountHolder; // Name of the account holder
     private double balance;       // Current account balance
     private double loan;          // Outstanding loan amount

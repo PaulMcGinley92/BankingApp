@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import ie.atu.sw.exceptions.AccountNotFoundException;
+import ie.atu.sw.exceptions.InvalidAmountException;
 
 /**
  * This program simulates a simple banking application. It allows:
@@ -23,7 +24,9 @@ public class BankingApp {
 	    // Add accounts
 	    bank.addAccount("Alice", 1000);
 	    bank.addAccount("Bob", 500);
-	    new Account("John", 100).deposit(-50);
+	    
+	    //Example invalid deposit now correctly throws an exception.
+	    //new Account("John", 100).deposit(-50);
 
 	    // Test deposits
 	    System.out.println("Depositing 200 to Alice: " + bank.deposit("Alice", 200)); // Should return true
@@ -62,6 +65,8 @@ public class BankingApp {
      * @param accountHolder The name of the account holder.
      * @return The Account object if found, otherwise null.
      */
+    
+    //Stream-based lookup now throws AccountNotFoundException instead of returning null.
     private Account findAccount(String accountHolder) {
     	 return accounts.stream()
     	            .filter(acc -> acc.getAccountHolder().equals(accountHolder))
@@ -85,9 +90,13 @@ public class BankingApp {
      * @param amount The deposit amount.
      * @return True if the deposit is successful, otherwise false.
      */
+    
+    // Now throws InvalidAmountException instead of returning false.
     public boolean deposit(String accountHolder, double amount) {
         Account account = findAccount(accountHolder);
-        if (account == null || amount <= 0) return false;
+        if (amount <= 0) {
+            throw new InvalidAmountException("Deposit amount must be positive.");
+        }
         account.deposit(amount);
         totalDeposits += amount;
         return true;
@@ -98,6 +107,11 @@ public class BankingApp {
      * @param accountHolder The name of the account holder.
      * @param amount The withdrawal amount.
      * @return True if the withdrawal is successful, otherwise false.
+     */
+    
+    /**
+     *Should throw exceptions like deposit does, but original return-based logic kept
+     *for compatibility with supplied main().
      */
     public boolean withdraw(String accountHolder, double amount) {
         Account account = findAccount(accountHolder);
@@ -115,6 +129,8 @@ public class BankingApp {
      * @param loanAmount The loan amount.
      * @return True if the loan is approved, otherwise false.
      */
+    
+    // Now relies on findAccount() which throws exceptions for missing accounts.
     public boolean approveLoan(String accountHolder, double loanAmount) {
         Account account = findAccount(accountHolder);
         if (account == null || loanAmount > totalDeposits) return false;
@@ -129,6 +145,9 @@ public class BankingApp {
      * @param amount The repayment amount.
      * @return True if the repayment is successful, otherwise false.
      */
+    
+    //Negative repayments now return false instead of silently doing nothing.
+    
     public boolean repayLoan(String accountHolder, double amount) {
         Account account = findAccount(accountHolder);
         if (account == null || amount <= 0) return false;
@@ -162,6 +181,9 @@ public class BankingApp {
      * @param accountHolder The name of the account holder.
      * @return The loan amount if the account exists, otherwise null.
      */
+    
+    //findAccount() now throws if account isn't found.
+    
     public Double getLoan(String accountHolder) {
         Account account = findAccount(accountHolder);
         return account != null ? account.getLoan() : null;
