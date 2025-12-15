@@ -1,6 +1,12 @@
 package ie.atu.sw;
 
 import org.junit.jupiter.api.*;                           // @BeforeAll, @BeforeEach, etc.
+
+import ie.atu.sw.exceptions.AccountNotFoundException;
+import ie.atu.sw.exceptions.InsufficientFundsException;
+import ie.atu.sw.exceptions.InvalidAmountException;
+
+import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;        // assertEquals, assertTrue, etc.
 
 class BankingAppTest {
@@ -90,5 +96,30 @@ class BankingAppTest {
     @AfterAll
     static void tearDownAll() {
         System.out.println("----- BankingApp test suite complete ----");
+    }
+    
+    @Test
+    void depositNegativeAmountThrows() {
+        assertThrows(InvalidAmountException.class,
+                () -> bank.deposit("Alice", -50));
+    }
+    
+    @Test
+    void withdrawTooMuchThrows() {
+        assertThrows(InsufficientFundsException.class,
+                () -> bank.withdraw("Alice", 2000));
+    }
+    
+    void repayMoreThanLoanThrows() {
+        bank.approveLoan("Alice", 300);
+
+        assertThrows(InvalidAmountException.class,
+                () -> bank.repayLoan("Alice", 500));
+    }
+    
+    @Test
+    void getBalanceForMissingAccountThrows() {
+        assertThrows(AccountNotFoundException.class,
+                () -> bank.getBalance("DoesNotExist"));
     }
 }
